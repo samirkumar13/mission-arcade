@@ -1,0 +1,613 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4efe7;
+    --panel: #fffdf9;
+    --ink: #1f2530;
+    --muted: #667085;
+    --line: #dde3ea;
+    --accent: #0f766e;
+    --accent-soft: #d7f3ef;
+    --boss: #dc244d;
+    --boss-soft: #ffe6ec;
+    --btn: #111827;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Rajdhani", sans-serif;
+    color: var(--ink);
+    background: radial-gradient(circle at top right, #e5f4f1, transparent 35%), var(--bg);
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 22px 14px 36px;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    margin: 6px 0 0;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .stats {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(110px, 1fr));
+    gap: 10px;
+  }
+
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    line-height: 1;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  .progress {
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .bar {
+    margin-top: 8px;
+    height: 10px;
+    border-radius: 999px;
+    background: #edf1f5;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #34d399, #0ea5e9);
+    transition: width 0.25s ease;
+  }
+
+  .composer {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1.3fr 1.4fr 110px auto auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font: inherit;
+    font-size: 1rem;
+    background: #fff;
+    color: var(--ink);
+  }
+
+  .check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  button {
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+
+  .btn-primary { background: var(--btn); color: #fff; }
+  .btn-secondary { background: #eff3f8; color: var(--ink); }
+
+  .list {
+    margin-top: 14px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .task {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+    display: grid;
+    gap: 10px;
+  }
+
+  .task.done {
+    opacity: 0.62;
+    background: #f8fafc;
+  }
+
+  .task-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .task-title {
+    margin: 0;
+    font-size: 1.28rem;
+    line-height: 1.12;
+  }
+
+  .task-desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.28;
+  }
+
+  .meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-size: 0.86rem;
+    border: 1px solid #bce8df;
+    border-radius: 999px;
+    padding: 2px 8px;
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .pill.boss {
+    border-color: #f7b2c2;
+    color: var(--boss);
+    background: var(--boss-soft);
+  }
+
+  .task-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-complete { background: #111827; color: #fff; }
+  .btn-undo { background: #e7edf4; color: #111827; }
+  .btn-delete { background: #fee2e2; color: #991b1b; }
+
+  .empty {
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    color: var(--muted);
+    background: #fff;
+  }
+
+  .footer {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+  }
+
+  .footer-actions {
+    display: inline-flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .toast {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    border: 1px solid #bce8df;
+    border-radius: 10px;
+    background: #f3fffb;
+    color: #0f766e;
+    padding: 10px 12px;
+    box-shadow: 0 8px 22px rgba(15, 118, 110, 0.15);
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 20;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+    .composer { grid-template-columns: 1fr; }
+    .task-head { flex-direction: column; }
+    .task-actions { width: 100%; }
+    .task-actions button { flex: 1; }
+    .footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="panel">
+      <h1 class="title">Mission Arcade</h1>
+      <p class="subtitle">Simple daily quest board. No time blocks, just tasks.</p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-label">XP</div><div class="stat-value" id="xp">0</div></div>
+        <div class="stat"><div class="stat-label">Done</div><div class="stat-value" id="done">0/0</div></div>
+        <div class="stat"><div class="stat-label">Bosses</div><div class="stat-value" id="bosses">0/0</div></div>
+        <div class="stat"><div class="stat-label">Rank</div><div class="stat-value" id="rank">1</div></div>
+      </div>
+
+      <div class="progress">
+        <div class="progress-top">
+          <span id="rank-name">Cadet</span>
+          <span id="progress-copy">0 / 300 XP</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="bar"></div></div>
+      </div>
+
+      <form id="task-form" class="composer">
+        <input id="task-title" type="text" maxlength="80" placeholder="Task title (required)" required>
+        <input id="task-desc" type="text" maxlength="150" placeholder="Short description (optional)">
+        <input id="task-xp" type="number" min="10" max="3000" step="10" value="120" required>
+        <label class="check"><input id="task-boss" type="checkbox"> Boss</label>
+        <button class="btn-primary" type="submit">Add Task</button>
+      </form>
+
+      <section id="task-list" class="list"></section>
+
+      <div class="footer">
+        <span>Max possible XP: <strong id="max-xp">0</strong> | Saved automatically in this browser</span>
+        <div class="footer-actions">
+          <button id="export-memory" class="btn-secondary" type="button">Export Memory</button>
+          <button id="import-memory" class="btn-secondary" type="button">Import Memory</button>
+          <button id="reset-progress" class="btn-secondary" type="button">Reset Progress</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <input id="import-file" type="file" accept="application/json" hidden>
+
+<script>
+  const STORAGE_KEY = "mission_arcade_state_v2";
+
+  const rankTable = [
+    { rank: 1, min: 0, title: "Cadet" },
+    { rank: 2, min: 300, title: "Ranger" },
+    { rank: 3, min: 700, title: "Specialist" },
+    { rank: 4, min: 1200, title: "Commander" },
+    { rank: 5, min: 1800, title: "Legend" }
+  ];
+
+  const defaultTasks = [
+    { id: 1, title: "Plan Top 3", desc: "Pick the 3 things that matter most.", xp: 120, boss: false, completed: false, custom: false },
+    { id: 2, title: "Deep Work Block", desc: "Ship one meaningful piece of work.", xp: 380, boss: true, completed: false, custom: false },
+    { id: 3, title: "Practice Sprint", desc: "Solve 2 focused practice problems.", xp: 220, boss: false, completed: false, custom: false },
+    { id: 4, title: "Daily Review", desc: "Write a quick win/lesson summary.", xp: 140, boss: false, completed: false, custom: false }
+  ];
+
+  const state = {
+    nextId: 5,
+    tasks: []
+  };
+
+  const refs = {
+    xp: document.getElementById("xp"),
+    done: document.getElementById("done"),
+    bosses: document.getElementById("bosses"),
+    rank: document.getElementById("rank"),
+    rankName: document.getElementById("rank-name"),
+    progressCopy: document.getElementById("progress-copy"),
+    bar: document.getElementById("bar"),
+    maxXp: document.getElementById("max-xp"),
+    list: document.getElementById("task-list"),
+    form: document.getElementById("task-form"),
+    titleInput: document.getElementById("task-title"),
+    descInput: document.getElementById("task-desc"),
+    xpInput: document.getElementById("task-xp"),
+    bossInput: document.getElementById("task-boss"),
+    resetBtn: document.getElementById("reset-progress"),
+    exportBtn: document.getElementById("export-memory"),
+    importBtn: document.getElementById("import-memory"),
+    importFile: document.getElementById("import-file"),
+    toast: document.getElementById("toast")
+  };
+
+  function getRank(xp) {
+    let current = rankTable[0];
+    for (const tier of rankTable) {
+      if (xp >= tier.min) current = tier;
+    }
+    return current;
+  }
+
+  function showToast(message) {
+    refs.toast.textContent = message;
+    refs.toast.classList.add("show");
+    clearTimeout(showToast.timeoutId);
+    showToast.timeoutId = setTimeout(() => {
+      refs.toast.classList.remove("show");
+    }, 1400);
+  }
+
+  function sanitizeTask(raw) {
+    return {
+      id: Number(raw.id),
+      title: String(raw.title || "Untitled").slice(0, 80),
+      desc: String(raw.desc || "").slice(0, 150),
+      xp: Math.max(10, Math.min(3000, Number(raw.xp) || 100)),
+      boss: Boolean(raw.boss),
+      completed: Boolean(raw.completed),
+      custom: Boolean(raw.custom)
+    };
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function exportMemory() {
+    const payload = {
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      nextId: state.nextId,
+      tasks: state.tasks
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mission-arcade-memory.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Memory exported");
+  }
+
+  function importMemoryFromFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result || ""));
+        if (!parsed || !Array.isArray(parsed.tasks)) throw new Error("Invalid backup file");
+        state.tasks = parsed.tasks.map(sanitizeTask);
+        const maxId = state.tasks.reduce((m, t) => Math.max(m, t.id), 0);
+        state.nextId = Math.max(Number(parsed.nextId) || 0, maxId + 1, 1);
+        saveState();
+        render();
+        showToast("Memory imported");
+      } catch (error) {
+        showToast("Import failed");
+      } finally {
+        refs.importFile.value = "";
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        state.tasks = defaultTasks.map((task) => ({ ...task }));
+        state.nextId = 5;
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.tasks)) throw new Error("bad state");
+      state.tasks = parsed.tasks.map(sanitizeTask);
+      const maxId = state.tasks.reduce((m, t) => Math.max(m, t.id), 0);
+      state.nextId = Math.max(Number(parsed.nextId) || 0, maxId + 1, 1);
+      if (state.tasks.length === 0) {
+        state.tasks = defaultTasks.map((task) => ({ ...task }));
+        state.nextId = 5;
+      }
+    } catch (err) {
+      state.tasks = defaultTasks.map((task) => ({ ...task }));
+      state.nextId = 5;
+    }
+  }
+
+  function derived() {
+    const total = state.tasks.length;
+    const done = state.tasks.filter((t) => t.completed).length;
+    const bossesTotal = state.tasks.filter((t) => t.boss).length;
+    const bossesDone = state.tasks.filter((t) => t.boss && t.completed).length;
+    const xp = state.tasks.reduce((sum, t) => sum + (t.completed ? t.xp : 0), 0);
+    const maxXP = state.tasks.reduce((sum, t) => sum + t.xp, 0);
+    return { total, done, bossesTotal, bossesDone, xp, maxXP };
+  }
+
+  function taskCard(task) {
+    const completeClass = task.completed ? "done" : "";
+    const completeLabel = task.completed ? "Undo" : "Complete";
+    const completeBtnClass = task.completed ? "btn-undo" : "btn-complete";
+    const bossTag = task.boss ? '<span class="pill boss">Boss</span>' : "";
+    const customTag = task.custom ? '<span class="pill">Custom</span>' : "";
+    const descHtml = task.desc ? `<p class="task-desc">${task.desc}</p>` : "";
+
+    return `
+      <article class="task ${completeClass}" data-id="${task.id}">
+        <div class="task-head">
+          <div>
+            <h3 class="task-title">${task.title}</h3>
+            ${descHtml}
+          </div>
+          <div class="meta">
+            <span class="pill">+${task.xp} XP</span>
+            ${bossTag}
+            ${customTag}
+          </div>
+        </div>
+        <div class="task-actions">
+          <button type="button" class="${completeBtnClass}" data-action="toggle">${completeLabel}</button>
+          <button type="button" class="btn-delete" data-action="delete">Delete</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function render() {
+    const d = derived();
+    const rank = getRank(d.xp);
+    const nextRank = rankTable.find((r) => r.min > d.xp);
+    const ceiling = nextRank ? nextRank.min : Math.max(d.xp, rank.min + 1);
+    const span = Math.max(ceiling - rank.min, 1);
+    const progress = nextRank ? ((d.xp - rank.min) / span) * 100 : 100;
+
+    refs.xp.textContent = String(d.xp);
+    refs.done.textContent = `${d.done}/${d.total}`;
+    refs.bosses.textContent = `${d.bossesDone}/${d.bossesTotal}`;
+    refs.rank.textContent = String(rank.rank);
+    refs.rankName.textContent = rank.title;
+    refs.progressCopy.textContent = `${d.xp} / ${ceiling} XP`;
+    refs.bar.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+    refs.maxXp.textContent = String(d.maxXP);
+
+    const ordered = [...state.tasks].sort((a, b) => Number(a.completed) - Number(b.completed));
+    if (ordered.length === 0) {
+      refs.list.innerHTML = '<div class="empty">No tasks yet. Add one above.</div>';
+      return;
+    }
+    refs.list.innerHTML = ordered.map(taskCard).join("");
+  }
+
+  function addTask(event) {
+    event.preventDefault();
+    const title = refs.titleInput.value.trim();
+    if (!title) return;
+
+    const task = sanitizeTask({
+      id: state.nextId,
+      title,
+      desc: refs.descInput.value.trim(),
+      xp: Number(refs.xpInput.value),
+      boss: refs.bossInput.checked,
+      completed: false,
+      custom: true
+    });
+
+    state.tasks.push(task);
+    state.nextId += 1;
+    saveState();
+    render();
+
+    refs.form.reset();
+    refs.xpInput.value = "120";
+    refs.titleInput.focus();
+    showToast("Task added");
+  }
+
+  function onTaskAction(event) {
+    const actionBtn = event.target.closest("button[data-action]");
+    if (!actionBtn) return;
+
+    const taskEl = actionBtn.closest(".task");
+    if (!taskEl) return;
+    const taskId = Number(taskEl.getAttribute("data-id"));
+    const task = state.tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    const action = actionBtn.getAttribute("data-action");
+
+    if (action === "toggle") {
+      task.completed = !task.completed;
+      saveState();
+      render();
+      showToast(task.completed ? `+${task.xp} XP` : "Completion undone");
+      return;
+    }
+
+    if (action === "delete") {
+      state.tasks = state.tasks.filter((t) => t.id !== taskId);
+      saveState();
+      render();
+      showToast("Task deleted");
+    }
+  }
+
+  function resetProgress() {
+    state.tasks.forEach((task) => {
+      task.completed = false;
+    });
+    saveState();
+    render();
+    showToast("Progress reset");
+  }
+
+  refs.form.addEventListener("submit", addTask);
+  refs.list.addEventListener("click", onTaskAction);
+  refs.resetBtn.addEventListener("click", resetProgress);
+  refs.exportBtn.addEventListener("click", exportMemory);
+  refs.importBtn.addEventListener("click", () => refs.importFile.click());
+  refs.importFile.addEventListener("change", (event) => {
+    const input = event.target;
+    importMemoryFromFile(input.files && input.files[0] ? input.files[0] : null);
+  });
+
+  loadState();
+  render();
+</script>
+</body>
+</html>
+
